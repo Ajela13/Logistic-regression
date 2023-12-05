@@ -186,3 +186,59 @@ plt.ylabel('True positive rate')
 plt.title('ROC Curve')
 plt.legend(loc='lower right')
 plt.show()
+
+#bayesian optimization 
+from skopt import BayesSearchCV
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import make_scorer, recall_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+
+
+lr_diff_bayesian_model= LogisticRegression(max_iter=2000)
+param_space = {'C': (1e-6, 1e+6, 'log-uniform'),
+               'class_weight': [None, 'balanced']}
+
+
+scorer = make_scorer(recall_score, greater_is_better=True)
+opt = BayesSearchCV(lr_diff_bayesian_model, param_space, n_iter=50, cv=5, scoring=scorer, n_jobs=-1)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+
+opt.fit(X_train_scaled, Y_train)
+print("Best hyperparameters:", opt.best_params_)
+X_test_scaled = scaler.transform(X_test)
+
+recall = opt.score(X_test_scaled, Y_test)
+print("Recall on the test set:", recall)
+
+y_pred_test = opt.predict(X_test_scaled)
+confusionMatrix=confusion_matrix(Y_test,y_pred_test)
+print(confusionMatrix)
+disp=ConfusionMatrixDisplay(confusion_matrix=confusionMatrix,display_labels=lr_basemodel.classes_)
+disp.plot()
+plt.show()
+
+
+#Accuracy score 
+print("accuracy score test dataset: t", accuracy_score(Y_test,y_pred_test))
+#precision score
+print("precision score test dataset: t", precision_score(Y_test,y_pred_test))
+#recall score
+print("recall score test dataset: t", recall_score(Y_test,y_pred_test))
+
+
+fpr_3,tpr_3,threshold_3=roc_curve(Y_test,opt.predict_proba(X_test_scaled)[:,1])
+auc_var_3=auc(fpr_3,tpr_3)
+plt.figure()
+plt.plot(fpr,tpr,label='logistic Regression 1 (area=%0.2f)'%auc_var)
+plt.plot(fpr_2,tpr_2,label='logistic Regression 2 (area=%0.2f)'%auc_var_2)
+plt.plot(fpr_3,tpr_3,label='logistic Regression 3 (area=%0.2f)'%auc_var_3)
+plt.plot([0,1],[0,1],'r--')
+plt.xlim([0.0,1.0])
+plt.ylim([0.0,1.05])
+plt.xlabel('False positive rate')
+plt.ylabel('True positive rate')
+plt.title('ROC Curve')
+plt.legend(loc='lower right')
+plt.show()
