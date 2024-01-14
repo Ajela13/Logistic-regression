@@ -6,6 +6,8 @@ import io
 import numpy as np
 #libraries for data visualization
 import matplotlib.pyplot as plt
+from plotly import subplots
+import plotly.graph_objects as go
 import seaborn as sns
 #We will use sklearn for building logistic regression model
 from sklearn.linear_model import LogisticRegression
@@ -230,15 +232,31 @@ print("recall score test dataset: t", recall_score(Y_test,y_pred_test))
 
 fpr_3,tpr_3,threshold_3=roc_curve(Y_test,opt.predict_proba(X_test_scaled)[:,1])
 auc_var_3=auc(fpr_3,tpr_3)
-plt.figure()
-plt.plot(fpr,tpr,label='logistic Regression 1 (area=%0.2f)'%auc_var)
-plt.plot(fpr_2,tpr_2,label='logistic Regression 2 (area=%0.2f)'%auc_var_2)
-plt.plot(fpr_3,tpr_3,label='logistic Regression 3 (area=%0.2f)'%auc_var_3)
-plt.plot([0,1],[0,1],'r--')
-plt.xlim([0.0,1.0])
-plt.ylim([0.0,1.05])
-plt.xlabel('False positive rate')
-plt.ylabel('True positive rate')
-plt.title('ROC Curve')
-plt.legend(loc='lower right')
-plt.show()
+# plt.figure()
+# plt.plot(fpr,tpr,label='logistic Regression 1 (area=%0.2f)'%auc_var)
+# plt.plot(fpr_2,tpr_2,label='logistic Regression 2 (area=%0.2f)'%auc_var_2)
+# plt.plot(fpr_3,tpr_3,label='logistic Regression 3 (area=%0.2f)'%auc_var_3)
+# plt.plot([0,1],[0,1],'r--')
+# plt.xlim([0.0,1.0])
+# plt.ylim([0.0,1.05])
+# plt.xlabel('False positive rate')
+# plt.ylabel('True positive rate')
+# plt.title('ROC Curve')
+# plt.legend(loc='lower right')
+# plt.show()
+fig = go.Figure()
+fig.add_traces([go.Line(x=fpr, y=tpr,name='logistic Regression 1 (area=%0.2f)'%auc_var),
+                go.Line(x=fpr_2, y=tpr_2,name='logistic Regression 2 (area=%0.2f)'%auc_var_2),
+                go.Line(x=fpr_3,y=tpr_3,name='logistic Regression 3 (area=%0.2f)'%auc_var_3)])
+
+fig.add_shape(
+    type='line', line=dict(dash='dash'),
+    x0=0, x1=1, y0=0, y1=1
+)
+fig.update_layout(
+    title= 'ROC Curve',
+    xaxis_title='False Positive Rate',
+    yaxis_title='True Positive Rate',
+    width=700, height=500
+)
+fig.show()
