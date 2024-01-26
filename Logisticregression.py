@@ -22,7 +22,7 @@ from sklearn.exceptions import ConvergenceWarning
 simplefilter('ignore',category=ConvergenceWarning)
 
 
-data=pd.read_csv(r"C:\Users\aleja\OneDrive\Escritorio\SKILLSLASH\Stadistics-Machine Learning\Machine learning\Logistic regression\HR_Data.csv") 
+data=pd.read_csv("HR_Data.csv") 
 
 #Building Data understanding 
 
